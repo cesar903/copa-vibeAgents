@@ -1,0 +1,7 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Prediction = void 0;
+class Prediction {
+}
+exports.Prediction = Prediction;
+//# sourceMappingURL=prediction.entity.js.map

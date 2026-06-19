@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: copa-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm run prisma:migrate:deploy && npm run start:prod
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: cesarreis521@gmail.com
+      - key: CORS_ORIGIN
+        sync: false

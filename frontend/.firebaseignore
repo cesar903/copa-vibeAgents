@@ -1,0 +1,9 @@
+.dart_tool
+.idea
+android
+ios
+lib
+test
+build/app
+build/ios
+*.log

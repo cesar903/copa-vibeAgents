@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MatchStatus {
+  SCHEDULED
+  LIVE
+  FINISHED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  predictions   Prediction[]
+  ranking       Ranking?
+  notifications Notification[]
+  refreshTokens RefreshToken[]
+}
+
+model Match {
+  id          String      @id @default(uuid())
+  homeTeam    String
+  awayTeam    String
+  competition String
+  stadium     String
+  startDate   DateTime
+  status      MatchStatus @default(SCHEDULED)
+  homeGoals   Int?
+  awayGoals   Int?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  predictions Prediction[]
+}
+
+model Prediction {
+  id        String   @id @default(uuid())
+  userId    String
+  matchId   String
+  homeGoals Int
+  awayGoals Int
+  locked    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  match Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, matchId])
+}
+
+model Ranking {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  points         Int      @default(0)
+  position       Int      @default(0)
+  exactScores    Int      @default(0)
+  correctWinners Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  body      String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
