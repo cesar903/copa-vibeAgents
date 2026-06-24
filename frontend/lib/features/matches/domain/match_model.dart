@@ -25,6 +25,7 @@ class MatchModel {
     required this.awayTeam,
     required this.competition,
     required this.stadium,
+    required this.round,
     required this.startDate,
     required this.status,
     this.homeGoals,
@@ -36,6 +37,7 @@ class MatchModel {
   final String awayTeam;
   final String competition;
   final String stadium;
+  final int round;
   final DateTime startDate;
   final MatchStatus status;
   final int? homeGoals;
@@ -52,6 +54,7 @@ class MatchModel {
       awayTeam: json['awayTeam'] as String,
       competition: json['competition'] as String,
       stadium: json['stadium'] as String,
+      round: json['round'] as int? ?? 1,
       startDate: DateTime.parse(json['startDate'] as String).toLocal(),
       status: MatchStatus.fromJson(json['status'] as String),
       homeGoals: json['homeGoals'] as int?,

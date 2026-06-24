@@ -164,7 +164,7 @@ class _MatchCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    match.competition,
+                    '${match.competition} • Rodada ${match.round}',
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
                 ),

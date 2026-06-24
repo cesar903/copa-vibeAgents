@@ -2,10 +2,12 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsDateString,
   IsEnum,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
+  Min,
 } from 'class-validator';
 import { MatchStatus } from '@prisma/client';
 
@@ -29,6 +31,12 @@ export class CreateMatchDto {
   @IsString()
   @IsNotEmpty()
   stadium: string;
+
+  @ApiPropertyOptional({ example: 1, default: 1 })
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  round?: number;
 
   @ApiProperty({ example: '2026-06-16T16:00:00Z' })
   @IsDateString()

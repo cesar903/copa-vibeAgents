@@ -73,6 +73,9 @@ describe('RankingService', () => {
     prediction: {
       findMany: jest.fn().mockResolvedValue(mockPredictions),
     },
+    roundPayment: {
+      findMany: jest.fn().mockResolvedValue([{ round: 1 }]),
+    },
     ranking: {
       upsert: jest.fn().mockResolvedValue({}),
       findMany: jest.fn().mockResolvedValue([]),
@@ -106,8 +109,15 @@ describe('RankingService', () => {
     it('should calculate points correctly for various prediction scenarios', async () => {
       await service.calculateRankingForUser('user-1');
 
+      expect(prisma.roundPayment.findMany).toHaveBeenCalledWith({
+        where: { userId: 'user-1', paid: true },
+        select: { round: true },
+      });
       expect(prisma.prediction.findMany).toHaveBeenCalledWith({
-        where: { userId: 'user-1', match: { status: 'FINISHED' } },
+        where: {
+          userId: 'user-1',
+          match: { status: 'FINISHED', round: { in: [1] } },
+        },
         include: { match: true },
       });
 

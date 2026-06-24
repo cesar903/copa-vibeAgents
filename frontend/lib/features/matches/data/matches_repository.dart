@@ -14,6 +14,7 @@ class MatchesRepository {
     required String awayTeam,
     required String competition,
     required String stadium,
+    required int round,
     required DateTime startDate,
     required MatchStatus status,
     int? homeGoals,
@@ -27,6 +28,7 @@ class MatchesRepository {
           'awayTeam': awayTeam,
           'competition': competition,
           'stadium': stadium,
+          'round': round,
           'startDate': startDate.toUtc().toIso8601String(),
           'status': status.apiValue,
           'homeGoals': ?homeGoals,
@@ -62,5 +64,63 @@ class MatchesRepository {
     } on DioException catch (error) {
       throw ApiException.fromDio(error);
     }
+  }
+
+  Future<List<RoundPaymentModel>> findRoundPayments({required int round}) async {
+    try {
+      final response = await _client.dio.get<List<dynamic>>(
+        '/round-payments',
+        queryParameters: {'round': round},
+      );
+      final data = response.data;
+      if (data == null) return const [];
+      return data
+          .whereType<Map<String, dynamic>>()
+          .map(RoundPaymentModel.fromJson)
+          .toList();
+    } on DioException catch (error) {
+      throw ApiException.fromDio(error);
+    }
+  }
+
+  Future<void> setRoundPayment({
+    required String userId,
+    required int round,
+    required bool paid,
+  }) async {
+    try {
+      await _client.dio.patch<Map<String, dynamic>>(
+        '/round-payments',
+        data: {'userId': userId, 'round': round, 'paid': paid},
+      );
+    } on DioException catch (error) {
+      throw ApiException.fromDio(error);
+    }
+  }
+}
+
+class RoundPaymentModel {
+  const RoundPaymentModel({
+    required this.userId,
+    required this.userName,
+    required this.userEmail,
+    required this.round,
+    required this.paid,
+  });
+
+  final String userId;
+  final String userName;
+  final String userEmail;
+  final int round;
+  final bool paid;
+
+  factory RoundPaymentModel.fromJson(Map<String, dynamic> json) {
+    return RoundPaymentModel(
+      userId: json['userId'] as String,
+      userName: json['userName'] as String,
+      userEmail: json['userEmail'] as String,
+      round: json['round'] as int,
+      paid: json['paid'] as bool,
+    );
   }
 }

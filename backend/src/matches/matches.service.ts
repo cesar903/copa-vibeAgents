@@ -20,6 +20,7 @@ export class MatchesService {
         awayTeam: createMatchDto.awayTeam,
         competition: createMatchDto.competition,
         stadium: createMatchDto.stadium,
+        round: createMatchDto.round ?? 1,
         startDate: new Date(createMatchDto.startDate),
         status: createMatchDto.status,
         homeGoals: createMatchDto.homeGoals,

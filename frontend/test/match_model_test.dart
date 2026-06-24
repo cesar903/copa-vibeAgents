@@ -27,6 +27,7 @@ void main() {
       awayTeam: 'B',
       competition: 'Copa',
       stadium: 'Arena',
+      round: 1,
       startDate: DateTime.now().add(const Duration(hours: 1)),
       status: MatchStatus.scheduled,
     );
@@ -36,6 +37,7 @@ void main() {
       awayTeam: 'B',
       competition: 'Copa',
       stadium: 'Arena',
+      round: 1,
       startDate: DateTime.now().add(const Duration(minutes: 10)),
       status: MatchStatus.scheduled,
     );

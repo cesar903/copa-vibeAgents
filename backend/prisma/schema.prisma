@@ -25,6 +25,7 @@ model User {
   ranking       Ranking?
   notifications Notification[]
   refreshTokens RefreshToken[]
+  roundPayments RoundPayment[]
 }
 
 model Match {
@@ -33,6 +34,7 @@ model Match {
   awayTeam    String
   competition String
   stadium     String
+  round       Int         @default(1)
   startDate   DateTime
   status      MatchStatus @default(SCHEDULED)
   homeGoals   Int?
@@ -41,6 +43,21 @@ model Match {
   updatedAt   DateTime    @updatedAt
 
   predictions Prediction[]
+}
+
+model RoundPayment {
+  id        String   @id @default(uuid())
+  userId    String
+  round     Int
+  paid      Boolean  @default(false)
+  paidAt    DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, round])
+  @@index([round])
 }
 
 model Prediction {

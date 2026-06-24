@@ -7,8 +7,20 @@ export class RankingService {
   constructor(private readonly prisma: PrismaService) {}
 
   async calculateRankingForUser(userId: string) {
+    const paidRounds = await this.prisma.roundPayment.findMany({
+      where: { userId, paid: true },
+      select: { round: true },
+    });
+    const paidRoundNumbers = paidRounds.map((payment) => payment.round);
+
     const predictions = await this.prisma.prediction.findMany({
-      where: { userId, match: { status: 'FINISHED' } },
+      where: {
+        userId,
+        match: {
+          status: 'FINISHED',
+          round: { in: paidRoundNumbers },
+        },
+      },
       include: { match: true },
     });
 

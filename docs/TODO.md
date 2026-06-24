@@ -1,5 +1,14 @@
 # Projeto Copa - TODO List
 
+## Atualização 24/06/2026 - Rodadas pagas
+
+- [x] Adicionar campo `round` nas partidas.
+- [x] Criar tabela `RoundPayment` para pagamento por usuário/rodada.
+- [x] Criar endpoints admin `GET /round-payments` e `PATCH /round-payments`.
+- [x] Fazer ranking ignorar rodadas não pagas pelo usuário.
+- [x] Adicionar controle admin de pagamentos por rodada no Flutter.
+- [x] Recalcular ranking ao marcar/desmarcar pagamento.
+
 ## Publicação
 
 - [x] Criar `backend/Dockerfile` e `.dockerignore`.

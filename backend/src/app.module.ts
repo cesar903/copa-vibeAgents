@@ -8,6 +8,7 @@ import { MatchesModule } from './matches/matches.module';
 import { PredictionsModule } from './predictions/predictions.module';
 import { RankingModule } from './ranking/ranking.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { RoundPaymentsModule } from './round-payments/round-payments.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     PredictionsModule,
     RankingModule,
     NotificationsModule,
+    RoundPaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
