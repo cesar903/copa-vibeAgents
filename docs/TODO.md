@@ -9,6 +9,25 @@
 - [x] Adicionar controle admin de pagamentos por rodada no Flutter.
 - [x] Recalcular ranking ao marcar/desmarcar pagamento.
 
+## Atualização 24/06/2026 - Administração de usuários
+
+- [x] Proteger endpoints de usuários com JWT e admin.
+- [x] Listar usuários sem expor senha.
+- [x] Permitir alteração de nome/e-mail pelo admin.
+- [x] Permitir troca de senha pelo admin.
+- [x] Permitir exclusão de usuários pelo admin.
+- [x] Bloquear exclusão da própria conta admin logada.
+- [x] Adicionar painel de usuários no Flutter.
+
+## Atualização 25/06/2026 - Edição manual de partidas
+
+- [x] Listar partidas cadastradas na área administrativa.
+- [x] Permitir admin mudar partida para `SCHEDULED`, `LIVE` ou `FINISHED`.
+- [x] Permitir admin informar placar ao colocar partida ao vivo/finalizada.
+- [x] Recarregar partidas e ranking após salvar edição.
+- [x] Exibir palpites de todos os usuários quando a partida estiver `LIVE` ou `FINISHED`.
+- [x] Adicionar botão admin para gerar PDF/relatório dos resultados.
+
 ## Publicação
 
 - [x] Criar `backend/Dockerfile` e `.dockerignore`.

@@ -8,6 +8,8 @@ Atualizado em 24/06/2026.
 - O backend possui `RoundPayment`, controlado por `GET /round-payments` e `PATCH /round-payments`, protegido para administrador.
 - O ranking só considera palpites de partidas finalizadas quando o usuário está marcado como pago naquela rodada.
 - A tela administrativa permite cadastrar a rodada da partida e marcar/desmarcar usuários pagos por rodada.
+- A tela administrativa também permite listar usuários, alterar senha e excluir contas.
+- A tela administrativa lista partidas existentes e permite mudar manualmente o status para `LIVE` ou `FINISHED`; ao finalizar com placar, o backend recalcula o ranking.
 - Backend validado em 24/06/2026 com `npm.cmd run build` e `npm.cmd test -- --runInBand`.
 - Validação Flutter local ficou pendente porque os comandos Dart/Flutter permaneceram presos sem saída no ambiente atual.
 
