@@ -21,6 +21,20 @@ class PredictionsRepository {
     }
   }
 
+  Future<List<PredictionModel>> findByMatch(String matchId) async {
+    try {
+      final response = await _client.dio.get<List<dynamic>>(
+        '/predictions/match/$matchId',
+      );
+      return (response.data ?? const [])
+          .whereType<Map<String, dynamic>>()
+          .map(PredictionModel.fromJson)
+          .toList();
+    } on DioException catch (error) {
+      throw ApiException.fromDio(error);
+    }
+  }
+
   Future<PredictionModel> save({
     required String matchId,
     required int homeGoals,

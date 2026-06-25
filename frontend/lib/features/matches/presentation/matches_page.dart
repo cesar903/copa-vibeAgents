@@ -178,7 +178,7 @@ class _MatchCard extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Text(
-                    match.status == MatchStatus.finished
+                    match.status != MatchStatus.scheduled
                         ? '${match.homeGoals ?? 0}  ×  ${match.awayGoals ?? 0}'
                         : '×',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -207,20 +207,13 @@ class _MatchCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (prediction != null) ...[
+            if (match.status != MatchStatus.scheduled || prediction != null) ...[
               const SizedBox(height: 14),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  'Seu palpite: ${prediction!.homeGoals} × ${prediction!.awayGoals}',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
+              _ScoreSummary(match: match, prediction: prediction),
+            ],
+            if (match.status != MatchStatus.scheduled) ...[
+              const SizedBox(height: 14),
+              _VisiblePredictionsSection(match: match),
             ],
             if (match.acceptsPrediction) ...[
               const SizedBox(height: 14),
@@ -238,6 +231,202 @@ class _MatchCard extends StatelessWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ScoreSummary extends StatelessWidget {
+  const _ScoreSummary({required this.match, this.prediction});
+
+  final MatchModel match;
+  final PredictionModel? prediction;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final officialScore = match.status == MatchStatus.scheduled
+        ? 'Aguardando jogo'
+        : '${match.homeGoals ?? '-'} × ${match.awayGoals ?? '-'}';
+    final predictionScore = prediction == null
+        ? 'Você ainda não palpitou'
+        : '${prediction!.homeGoals} × ${prediction!.awayGoals}';
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _ScoreSummaryItem(
+              label: match.status == MatchStatus.live
+                  ? 'Placar ao vivo'
+                  : 'Placar oficial',
+              score: officialScore,
+            ),
+          ),
+          Container(
+            width: 1,
+            height: 38,
+            color: colorScheme.onPrimaryContainer.withValues(alpha: 0.18),
+          ),
+          Expanded(
+            child: _ScoreSummaryItem(label: 'Seu palpite', score: predictionScore),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ScoreSummaryItem extends StatelessWidget {
+  const _ScoreSummaryItem({required this.label, required this.score});
+
+  final String label;
+  final String score;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(label, style: Theme.of(context).textTheme.labelSmall),
+        const SizedBox(height: 4),
+        Text(
+          score,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+}
+
+class _VisiblePredictionsSection extends StatefulWidget {
+  const _VisiblePredictionsSection({required this.match});
+
+  final MatchModel match;
+
+  @override
+  State<_VisiblePredictionsSection> createState() =>
+      _VisiblePredictionsSectionState();
+}
+
+class _VisiblePredictionsSectionState
+    extends State<_VisiblePredictionsSection> {
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  @override
+  void didUpdateWidget(covariant _VisiblePredictionsSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.match.id != widget.match.id ||
+        oldWidget.match.status != widget.match.status) {
+      _load();
+    }
+  }
+
+  void _load() {
+    context.read<PredictionsCubit>().loadForMatch(widget.match.id);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<PredictionsCubit, PredictionsState>(
+      buildWhen: (previous, current) =>
+          previous.visibleByMatchId[widget.match.id] !=
+              current.visibleByMatchId[widget.match.id] ||
+          previous.loadingVisibleMatchIds.contains(widget.match.id) !=
+              current.loadingVisibleMatchIds.contains(widget.match.id),
+      builder: (context, state) {
+        final predictions = state.visibleByMatchId[widget.match.id] ?? const [];
+        final isLoading = state.loadingVisibleMatchIds.contains(
+          widget.match.id,
+        );
+
+        return Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Theme.of(
+                context,
+              ).colorScheme.outlineVariant.withValues(alpha: 0.8),
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Palpites da partida',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Atualizar palpites',
+                    onPressed: isLoading ? null : _load,
+                    icon: isLoading
+                        ? const SizedBox.square(
+                            dimension: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.refresh),
+                  ),
+                ],
+              ),
+              if (isLoading && predictions.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (predictions.isEmpty)
+                const Text('Nenhum palpite encontrado para esta partida.')
+              else
+                ...predictions.map((prediction) => _PredictionRow(prediction)),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _PredictionRow extends StatelessWidget {
+  const _PredictionRow(this.prediction);
+
+  final PredictionModel prediction;
+
+  @override
+  Widget build(BuildContext context) {
+    final userName = prediction.user?.name ?? 'Usuário';
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              userName,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          Text(
+            '${prediction.homeGoals} × ${prediction.awayGoals}',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ],
       ),
     );
   }

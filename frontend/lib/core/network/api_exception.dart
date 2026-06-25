@@ -19,13 +19,24 @@ class ApiException implements Exception {
       }
     }
 
+    final statusCode = error.response?.statusCode;
     return ApiException(
-      message ?? _fallback(error.type),
-      statusCode: error.response?.statusCode,
+      message ?? _fallback(error.type, statusCode),
+      statusCode: statusCode,
     );
   }
 
-  static String _fallback(DioExceptionType type) {
+  static String _fallback(DioExceptionType type, int? statusCode) {
+    if (statusCode == 401 || statusCode == 403) {
+      return 'Sua sessão não tem permissão para esta operação. Entre novamente com o administrador.';
+    }
+    if (statusCode == 404) {
+      return 'Recurso não encontrado na API. Confirme se o backend foi atualizado no Render.';
+    }
+    if (statusCode != null && statusCode >= 500) {
+      return 'A API encontrou um erro interno. Verifique os logs do Render.';
+    }
+
     return switch (type) {
       DioExceptionType.connectionTimeout ||
       DioExceptionType.sendTimeout ||

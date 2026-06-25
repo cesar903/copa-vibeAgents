@@ -8,6 +8,8 @@ import '../domain/prediction_model.dart';
 class PredictionsState extends Equatable {
   const PredictionsState({
     this.byMatchId = const {},
+    this.visibleByMatchId = const {},
+    this.loadingVisibleMatchIds = const {},
     this.isLoading = false,
     this.submittingMatchId,
     this.errorMessage,
@@ -15,6 +17,8 @@ class PredictionsState extends Equatable {
   });
 
   final Map<String, PredictionModel> byMatchId;
+  final Map<String, List<PredictionModel>> visibleByMatchId;
+  final Set<String> loadingVisibleMatchIds;
   final bool isLoading;
   final String? submittingMatchId;
   final String? errorMessage;
@@ -23,6 +27,8 @@ class PredictionsState extends Equatable {
   @override
   List<Object?> get props => [
     byMatchId,
+    visibleByMatchId,
+    loadingVisibleMatchIds,
     isLoading,
     submittingMatchId,
     errorMessage,
@@ -38,18 +44,29 @@ class PredictionsCubit extends Cubit<PredictionsState> {
   void reset() => emit(const PredictionsState());
 
   Future<void> loadMine() async {
-    emit(PredictionsState(byMatchId: state.byMatchId, isLoading: true));
+    emit(
+      PredictionsState(
+        byMatchId: state.byMatchId,
+        visibleByMatchId: state.visibleByMatchId,
+        loadingVisibleMatchIds: state.loadingVisibleMatchIds,
+        isLoading: true,
+      ),
+    );
     try {
       final predictions = await _repository.findMine();
       emit(
         PredictionsState(
           byMatchId: {for (final item in predictions) item.matchId: item},
+          visibleByMatchId: state.visibleByMatchId,
+          loadingVisibleMatchIds: state.loadingVisibleMatchIds,
         ),
       );
     } on ApiException catch (error) {
       emit(
         PredictionsState(
           byMatchId: state.byMatchId,
+          visibleByMatchId: state.visibleByMatchId,
+          loadingVisibleMatchIds: state.loadingVisibleMatchIds,
           errorMessage: error.message,
         ),
       );
@@ -62,7 +79,12 @@ class PredictionsCubit extends Cubit<PredictionsState> {
     required int awayGoals,
   }) async {
     emit(
-      PredictionsState(byMatchId: state.byMatchId, submittingMatchId: matchId),
+      PredictionsState(
+        byMatchId: state.byMatchId,
+        visibleByMatchId: state.visibleByMatchId,
+        loadingVisibleMatchIds: state.loadingVisibleMatchIds,
+        submittingMatchId: matchId,
+      ),
     );
     try {
       final prediction = await _repository.save(
@@ -73,6 +95,17 @@ class PredictionsCubit extends Cubit<PredictionsState> {
       emit(
         PredictionsState(
           byMatchId: {...state.byMatchId, matchId: prediction},
+          visibleByMatchId: {
+            ...state.visibleByMatchId,
+            if (state.visibleByMatchId.containsKey(matchId))
+              matchId: [
+                prediction,
+                ...state.visibleByMatchId[matchId]!.where(
+                  (item) => item.id != prediction.id,
+                ),
+              ],
+          },
+          loadingVisibleMatchIds: state.loadingVisibleMatchIds,
           successMessage: 'Palpite salvo com sucesso.',
         ),
       );
@@ -81,10 +114,48 @@ class PredictionsCubit extends Cubit<PredictionsState> {
       emit(
         PredictionsState(
           byMatchId: state.byMatchId,
+          visibleByMatchId: state.visibleByMatchId,
+          loadingVisibleMatchIds: state.loadingVisibleMatchIds,
           errorMessage: error.message,
         ),
       );
       return false;
+    }
+  }
+
+  Future<void> loadForMatch(String matchId) async {
+    if (state.loadingVisibleMatchIds.contains(matchId)) return;
+
+    emit(
+      PredictionsState(
+        byMatchId: state.byMatchId,
+        visibleByMatchId: state.visibleByMatchId,
+        loadingVisibleMatchIds: {...state.loadingVisibleMatchIds, matchId},
+      ),
+    );
+    try {
+      final predictions = await _repository.findByMatch(matchId);
+      final loadingIds = {...state.loadingVisibleMatchIds}..remove(matchId);
+      emit(
+        PredictionsState(
+          byMatchId: state.byMatchId,
+          visibleByMatchId: {
+            ...state.visibleByMatchId,
+            matchId: predictions,
+          },
+          loadingVisibleMatchIds: loadingIds,
+        ),
+      );
+    } on ApiException catch (error) {
+      final loadingIds = {...state.loadingVisibleMatchIds}..remove(matchId);
+      emit(
+        PredictionsState(
+          byMatchId: state.byMatchId,
+          visibleByMatchId: state.visibleByMatchId,
+          loadingVisibleMatchIds: loadingIds,
+          errorMessage: error.message,
+        ),
+      );
     }
   }
 }
