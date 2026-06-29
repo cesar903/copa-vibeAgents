@@ -165,3 +165,11 @@ npm run start:prod
 - Na web, o bot�o abre um HTML imprim�vel em nova aba e aciona `window.print()` para salvar como PDF.
 - O relat�rio inclui ranking, partidas ao vivo/finalizadas e palpites por usu�rio.
 - Em plataformas n�o web, o exportador retorna indispon�vel sem quebrar o build mobile.
+
+
+## Atualiza��o 29/06/2026 - Clareza de grana, ranking e palpites
+
+- `Match.isMoneyPool` indica se a partida/rodada vale dinheiro. Default `true` preserva comportamento atual.
+- Ranking agora busca todos os palpites finalizados do usu�rio e soma cumulativamente; s� ignora uma partida quando `isMoneyPool=true` e a rodada n�o est� paga.
+- Cards mostram badge `Vale grana` ou `Sem grana`.
+- A lista de palpites de todos em jogos `LIVE`/`FINISHED` fica recolhida no bot�o `Ver palpites de todos`.

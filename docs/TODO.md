@@ -27,6 +27,9 @@
 - [x] Recarregar partidas e ranking após salvar edição.
 - [x] Exibir palpites de todos os usuários quando a partida estiver `LIVE` ou `FINISHED`.
 - [x] Adicionar botão admin para gerar PDF/relatório dos resultados.
+- [x] Adicionar flag `Vale dinheiro` por partida.
+- [x] Recolher a lista de palpites de todos atrás de botão no card.
+- [x] Garantir ranking cumulativo por usuário, ignorando pagamento apenas quando o jogo vale dinheiro e a rodada não está paga.
 
 ## Publicação
 

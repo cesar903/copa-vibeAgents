@@ -168,6 +168,8 @@ class _MatchCard extends StatelessWidget {
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
                 ),
+                _MoneyBadge(isMoneyPool: match.isMoneyPool),
+                const SizedBox(width: 8),
                 _StatusBadge(status: match.status),
               ],
             ),
@@ -316,18 +318,14 @@ class _VisiblePredictionsSection extends StatefulWidget {
 
 class _VisiblePredictionsSectionState
     extends State<_VisiblePredictionsSection> {
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
+  bool _isExpanded = false;
 
   @override
   void didUpdateWidget(covariant _VisiblePredictionsSection oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.match.id != widget.match.id ||
         oldWidget.match.status != widget.match.status) {
-      _load();
+      _isExpanded = false;
     }
   }
 
@@ -335,8 +333,25 @@ class _VisiblePredictionsSectionState
     context.read<PredictionsCubit>().loadForMatch(widget.match.id);
   }
 
+  void _toggle() {
+    setState(() => _isExpanded = !_isExpanded);
+    if (!_isExpanded) return;
+    final state = context.read<PredictionsCubit>().state;
+    if (!state.visibleByMatchId.containsKey(widget.match.id)) {
+      _load();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (!_isExpanded) {
+      return OutlinedButton.icon(
+        onPressed: _toggle,
+        icon: const Icon(Icons.visibility_outlined),
+        label: const Text('Ver palpites de todos'),
+      );
+    }
+
     return BlocBuilder<PredictionsCubit, PredictionsState>(
       buildWhen: (previous, current) =>
           previous.visibleByMatchId[widget.match.id] !=
@@ -371,6 +386,11 @@ class _VisiblePredictionsSectionState
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                  ),
+                  IconButton(
+                    tooltip: 'Ocultar palpites',
+                    onPressed: _toggle,
+                    icon: const Icon(Icons.expand_less),
                   ),
                   IconButton(
                     tooltip: 'Atualizar palpites',
@@ -470,6 +490,28 @@ class _StatusBadge extends StatelessWidget {
       ),
       child: Text(
         status.label,
+        style: TextStyle(color: color, fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+}
+
+class _MoneyBadge extends StatelessWidget {
+  const _MoneyBadge({required this.isMoneyPool});
+
+  final bool isMoneyPool;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isMoneyPool ? Colors.green : Colors.blueGrey;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(99),
+      ),
+      child: Text(
+        isMoneyPool ? 'Vale grana' : 'Sem grana',
         style: TextStyle(color: color, fontWeight: FontWeight.w700),
       ),
     );

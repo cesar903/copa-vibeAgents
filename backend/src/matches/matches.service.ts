@@ -21,6 +21,7 @@ export class MatchesService {
         competition: createMatchDto.competition,
         stadium: createMatchDto.stadium,
         round: createMatchDto.round ?? 1,
+        isMoneyPool: createMatchDto.isMoneyPool ?? true,
         startDate: new Date(createMatchDto.startDate),
         status: createMatchDto.status,
         homeGoals: createMatchDto.homeGoals,

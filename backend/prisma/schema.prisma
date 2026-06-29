@@ -35,6 +35,7 @@ model Match {
   competition String
   stadium     String
   round       Int         @default(1)
+  isMoneyPool Boolean     @default(true)
   startDate   DateTime
   status      MatchStatus @default(SCHEDULED)
   homeGoals   Int?

@@ -36,6 +36,7 @@ class _MatchAdminPageState extends State<MatchAdminPage> {
 
   DateTime _startDate = DateTime.now().add(const Duration(days: 1));
   MatchStatus _status = MatchStatus.scheduled;
+  bool _isMoneyPool = true;
   bool _isSubmitting = false;
 
   @override
@@ -87,6 +88,7 @@ class _MatchAdminPageState extends State<MatchAdminPage> {
         competition: _competitionController.text.trim(),
         stadium: _stadiumController.text.trim(),
         round: int.parse(_roundController.text),
+        isMoneyPool: _isMoneyPool,
         startDate: _startDate,
         status: _status,
         homeGoals: int.tryParse(_homeGoalsController.text),
@@ -105,6 +107,7 @@ class _MatchAdminPageState extends State<MatchAdminPage> {
       _awayGoalsController.clear();
       setState(() {
         _status = MatchStatus.scheduled;
+        _isMoneyPool = true;
         _startDate = DateTime.now().add(const Duration(days: 1));
       });
       ScaffoldMessenger.of(context).showSnackBar(
@@ -121,13 +124,13 @@ class _MatchAdminPageState extends State<MatchAdminPage> {
   }
 
   String? _required(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Campo obrigatório';
+    if (value == null || value.trim().isEmpty) return 'Campo obrigatÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³rio';
     return null;
   }
 
   String? _validRound(String? value) {
     final round = int.tryParse(value ?? '');
-    if (round == null || round < 1) return 'Informe uma rodada válida';
+    if (round == null || round < 1) return 'Informe uma rodada vÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡lida';
     return null;
   }
 
@@ -136,7 +139,7 @@ class _MatchAdminPageState extends State<MatchAdminPage> {
     final showScores = _status != MatchStatus.scheduled;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Administração'),
+        title: const Text('AdministraÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o'),
         actions: const [AccountMenu()],
       ),
       body: SafeArea(
@@ -180,7 +183,7 @@ class _MatchAdminPageState extends State<MatchAdminPage> {
                         TextFormField(
                           controller: _competitionController,
                           decoration: const InputDecoration(
-                            labelText: 'Competição',
+                            labelText: 'CompetiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o',
                           ),
                           validator: _required,
                         ),
@@ -188,7 +191,7 @@ class _MatchAdminPageState extends State<MatchAdminPage> {
                         TextFormField(
                           controller: _stadiumController,
                           decoration: const InputDecoration(
-                            labelText: 'Estádio',
+                            labelText: 'EstÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡dio',
                           ),
                           validator: _required,
                         ),
@@ -199,9 +202,23 @@ class _MatchAdminPageState extends State<MatchAdminPage> {
                           decoration: const InputDecoration(
                             labelText: 'Rodada',
                             helperText:
-                                'Usuários sem pagamento nesta rodada não pontuam.',
+                                'UsuÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡rios sem pagamento nesta rodada nÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o pontuam.',
                           ),
                           validator: _validRound,
+                        ),
+                        const SizedBox(height: 16),
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('Vale dinheiro'),
+                          subtitle: Text(
+                            _isMoneyPool
+                                ? 'So pontua quem estiver pago na rodada.'
+                                : 'Pontuacao conta para todos, sem cobranca.',
+                          ),
+                          value: _isMoneyPool,
+                          onChanged: (value) {
+                            setState(() => _isMoneyPool = value);
+                          },
                         ),
                         const SizedBox(height: 16),
                         OutlinedButton.icon(
@@ -209,7 +226,7 @@ class _MatchAdminPageState extends State<MatchAdminPage> {
                           icon: const Icon(Icons.event_outlined),
                           label: Text(
                             DateFormat(
-                              'dd/MM/yyyy • HH:mm',
+                              'dd/MM/yyyy ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ HH:mm',
                             ).format(_startDate),
                           ),
                         ),
@@ -335,8 +352,8 @@ class _ResultsReportPanelState extends State<_ResultsReportPanel> {
         SnackBar(
           content: Text(
             opened
-                ? 'Relatório aberto. Use "Salvar como PDF".'
-                : 'Geração de PDF disponível apenas na versão web.',
+                ? 'RelatÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³rio aberto. Use "Salvar como PDF".'
+                : 'GeraÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o de PDF disponÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­vel apenas na versÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o web.',
           ),
         ),
       );
@@ -359,14 +376,14 @@ class _ResultsReportPanelState extends State<_ResultsReportPanel> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Relatório de resultados',
+              'RelatÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³rio de resultados',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
             const Text(
-              'Gera ranking, partidas ao vivo/finalizadas e palpites de cada usuário.',
+              'Gera ranking, partidas ao vivo/finalizadas e palpites de cada usuÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡rio.',
             ),
             const SizedBox(height: 16),
             FilledButton.icon(
@@ -378,7 +395,7 @@ class _ResultsReportPanelState extends State<_ResultsReportPanel> {
                     )
                   : const Icon(Icons.picture_as_pdf_outlined),
               label: Text(
-                _isGenerating ? 'Gerando relatório...' : 'Gerar PDF',
+                _isGenerating ? 'Gerando relatÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³rio...' : 'Gerar PDF',
               ),
             ),
           ],
@@ -438,8 +455,8 @@ class _ResultsReportHtmlBuilder {
   <table>
     <thead>
       <tr>
-        <th>Posição</th>
-        <th>Usuário</th>
+        <th>PosiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o</th>
+        <th>UsuÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡rio</th>
         <th>Pontos</th>
         <th>Placares exatos</th>
         <th>Resultados corretos</th>
@@ -472,21 +489,22 @@ class _ResultsReportHtmlBuilder {
     final predictions = predictionsByMatch[match.id] ?? const [];
     final predictionRows = predictions.map(_predictionRow).join();
     final date = DateFormat('dd/MM/yyyy HH:mm').format(match.startDate);
+    final moneyLabel = match.isMoneyPool ? 'Vale grana' : 'Sem grana';
     final score = match.status == MatchStatus.scheduled
         ? 'Aguardando'
-        : '${match.homeGoals ?? '-'} × ${match.awayGoals ?? '-'}';
+        : '${match.homeGoals ?? '-'} x ${match.awayGoals ?? '-'}';
 
     return '''
 <section class="match">
-  <h3>${_escape.convert(match.homeTeam)} × ${_escape.convert(match.awayTeam)}</h3>
+  <h3>${_escape.convert(match.homeTeam)} x ${_escape.convert(match.awayTeam)}</h3>
   <div class="meta">
-    ${_escape.convert(match.competition)} • Rodada ${match.round} • ${match.status.label} • $date
+    ${_escape.convert(match.competition)} - Rodada ${match.round} - $moneyLabel - ${match.status.label} - $date
   </div>
   <div>Placar: <span class="score">$score</span></div>
   <table>
     <thead>
       <tr>
-        <th>Usuário</th>
+        <th>UsuÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡rio</th>
         <th>Palpite</th>
       </tr>
     </thead>
@@ -499,11 +517,11 @@ class _ResultsReportHtmlBuilder {
   }
 
   String _predictionRow(PredictionModel prediction) {
-    final name = prediction.user?.name ?? 'Usuário';
+    final name = prediction.user?.name ?? 'UsuÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡rio';
     return '''
 <tr>
   <td>${_escape.convert(name)}</td>
-  <td class="score">${prediction.homeGoals} × ${prediction.awayGoals}</td>
+  <td class="score">${prediction.homeGoals} ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ${prediction.awayGoals}</td>
 </tr>
 ''';
   }
@@ -558,6 +576,7 @@ class _MatchesAdminPanelState extends State<_MatchesAdminPanel> {
       await widget.repository.update(
         id: match.id,
         status: result.status,
+        isMoneyPool: result.isMoneyPool,
         homeGoals: result.homeGoals,
         awayGoals: result.awayGoals,
       );
@@ -606,7 +625,7 @@ class _MatchesAdminPanelState extends State<_MatchesAdminPanel> {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Use esta área para colocar o jogo ao vivo ou finalizar com placar.',
+              'Use esta ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡rea para colocar o jogo ao vivo ou finalizar com placar.',
             ),
             const SizedBox(height: 16),
             if (_isLoading && _matches.isEmpty)
@@ -617,7 +636,7 @@ class _MatchesAdminPanelState extends State<_MatchesAdminPanel> {
               ..._matches.map(
                 (match) => ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text('${match.homeTeam} × ${match.awayTeam}'),
+                  title: Text('${match.homeTeam} ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ${match.awayTeam}'),
                   subtitle: Text(_matchSubtitle(match)),
                   trailing: _savingMatchId == match.id
                       ? const SizedBox.square(
@@ -639,17 +658,20 @@ class _MatchesAdminPanelState extends State<_MatchesAdminPanel> {
 
   String _matchSubtitle(MatchModel match) {
     final date = DateFormat('dd/MM HH:mm').format(match.startDate);
-    return 'Rodada ${match.round} � ${match.status.label} � $date';
+    final moneyLabel = match.isMoneyPool ? 'Vale grana' : 'Sem grana';
+    return 'Rodada ${match.round} - $moneyLabel - ${match.status.label} - $date';
   }
 }
 class _MatchUpdateResult {
   const _MatchUpdateResult({
     required this.status,
+    required this.isMoneyPool,
     this.homeGoals,
     this.awayGoals,
   });
 
   final MatchStatus status;
+  final bool isMoneyPool;
   final int? homeGoals;
   final int? awayGoals;
 }
@@ -666,6 +688,7 @@ class _MatchStatusDialog extends StatefulWidget {
 class _MatchStatusDialogState extends State<_MatchStatusDialog> {
   final _formKey = GlobalKey<FormState>();
   late MatchStatus _status;
+  late bool _isMoneyPool;
   late final TextEditingController _homeGoalsController;
   late final TextEditingController _awayGoalsController;
 
@@ -673,6 +696,7 @@ class _MatchStatusDialogState extends State<_MatchStatusDialog> {
   void initState() {
     super.initState();
     _status = widget.match.status;
+    _isMoneyPool = widget.match.isMoneyPool;
     _homeGoalsController = TextEditingController(
       text: widget.match.homeGoals?.toString() ?? '',
     );
@@ -701,6 +725,7 @@ class _MatchStatusDialogState extends State<_MatchStatusDialog> {
     Navigator.of(context).pop(
       _MatchUpdateResult(
         status: _status,
+        isMoneyPool: _isMoneyPool,
         homeGoals: _status == MatchStatus.scheduled
             ? null
             : int.tryParse(_homeGoalsController.text),
@@ -715,7 +740,7 @@ class _MatchStatusDialogState extends State<_MatchStatusDialog> {
   Widget build(BuildContext context) {
     final showScores = _status != MatchStatus.scheduled;
     return AlertDialog(
-      title: Text('${widget.match.homeTeam} × ${widget.match.awayTeam}'),
+      title: Text('${widget.match.homeTeam} ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ${widget.match.awayTeam}'),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -735,6 +760,20 @@ class _MatchStatusDialogState extends State<_MatchStatusDialog> {
                     .toList(),
                 onChanged: (status) {
                   if (status != null) setState(() => _status = status);
+                },
+              ),
+              const SizedBox(height: 16),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Vale dinheiro'),
+                subtitle: Text(
+                  _isMoneyPool
+                      ? 'So pontua quem estiver pago na rodada.'
+                      : 'Pontuacao conta para todos, sem cobranca.',
+                ),
+                value: _isMoneyPool,
+                onChanged: (value) {
+                  setState(() => _isMoneyPool = value);
                 },
               ),
               if (showScores) ...[
@@ -767,8 +806,8 @@ class _MatchStatusDialogState extends State<_MatchStatusDialog> {
                 const SizedBox(height: 8),
                 Text(
                   _status == MatchStatus.finished
-                      ? 'Ao salvar como finalizada, o ranking será recalculado.'
-                      : 'Ao vivo libera a visualização dos palpites dos outros usuários.',
+                      ? 'Ao salvar como finalizada, o ranking serÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ recalculado.'
+                      : 'Ao vivo libera a visualizaÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o dos palpites dos outros usuÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡rios.',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
@@ -870,7 +909,7 @@ class _RoundPaymentsPanelState extends State<_RoundPaymentsPanel> {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Marque quem pagou. Se não pagou, os jogos dessa rodada não entram no ranking do usuário.',
+              'Marque quem pagou. Se nÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o pagou, os jogos dessa rodada nÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o entram no ranking do usuÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡rio.',
             ),
             const SizedBox(height: 16),
             Row(
@@ -899,7 +938,7 @@ class _RoundPaymentsPanelState extends State<_RoundPaymentsPanel> {
             if (_isLoading && _payments.isEmpty)
               const Center(child: CircularProgressIndicator())
             else if (_payments.isEmpty)
-              const Text('Nenhum usuário encontrado.')
+              const Text('Nenhum usuÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡rio encontrado.')
             else
               ..._payments.map(
                 (payment) => SwitchListTile(
@@ -977,7 +1016,7 @@ class _UsersAdminPanelState extends State<_UsersAdminPanel> {
           obscureText: true,
           decoration: const InputDecoration(
             labelText: 'Nova senha',
-            helperText: 'Mínimo de 8 caracteres.',
+            helperText: 'MÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­nimo de 8 caracteres.',
           ),
         ),
         actions: [
@@ -998,7 +1037,7 @@ class _UsersAdminPanelState extends State<_UsersAdminPanel> {
     if (password.length < 8) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('A senha precisa ter no mínimo 8 caracteres.')),
+        const SnackBar(content: Text('A senha precisa ter no mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­nimo 8 caracteres.')),
       );
       return;
     }
@@ -1061,7 +1100,7 @@ class _UsersAdminPanelState extends State<_UsersAdminPanel> {
       builder: (context) => AlertDialog(
         title: Text('Excluir ${user.name}?'),
         content: Text(
-          'Esta ação remove a conta, palpites, pagamentos e ranking deste usuário. Não é possível desfazer.',
+          'Esta aÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o remove a conta, palpites, pagamentos e ranking deste usuÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡rio. NÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â© possÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­vel desfazer.',
         ),
         actions: [
           TextButton(
@@ -1086,7 +1125,7 @@ class _UsersAdminPanelState extends State<_UsersAdminPanel> {
       await context.read<RankingCubit>().load();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${user.name} foi excluído.')),
+        SnackBar(content: Text('${user.name} foi excluÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­do.')),
       );
     } on ApiException catch (error) {
       if (!mounted) return;
@@ -1110,7 +1149,7 @@ class _UsersAdminPanelState extends State<_UsersAdminPanel> {
               children: [
                 Expanded(
                   child: Text(
-                    'Usuários',
+                    'UsuÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡rios',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -1123,12 +1162,12 @@ class _UsersAdminPanelState extends State<_UsersAdminPanel> {
               ],
             ),
             const SizedBox(height: 8),
-            const Text('Altere senhas ou exclua contas quando necessário.'),
+            const Text('Altere senhas ou exclua contas quando necessÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡rio.'),
             const SizedBox(height: 16),
             if (_isLoading && _users.isEmpty)
               const Center(child: CircularProgressIndicator())
             else if (_users.isEmpty)
-              const Text('Nenhum usuário encontrado.')
+              const Text('Nenhum usuÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡rio encontrado.')
             else
               ..._users.map(
                 (user) => ListTile(
@@ -1154,7 +1193,7 @@ class _UsersAdminPanelState extends State<_UsersAdminPanel> {
                               icon: const Icon(Icons.lock_reset),
                             ),
                             IconButton(
-                              tooltip: 'Excluir usuário',
+                              tooltip: 'Excluir usuÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡rio',
                               onPressed: () => _deleteUser(user),
                               icon: const Icon(Icons.delete_outline),
                             ),
@@ -1205,7 +1244,7 @@ class _UserEditDialogState extends State<_UserEditDialog> {
   }
 
   String? _required(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Campo obrigatório';
+    if (value == null || value.trim().isEmpty) return 'Campo obrigatÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³rio';
     return null;
   }
 
@@ -1214,7 +1253,7 @@ class _UserEditDialogState extends State<_UserEditDialog> {
     if (requiredError != null) return requiredError;
     final email = value!.trim();
     if (!email.contains('@') || !email.contains('.')) {
-      return 'Informe um e-mail válido';
+      return 'Informe um e-mail vÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡lido';
     }
     return null;
   }

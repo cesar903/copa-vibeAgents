@@ -11,14 +11,13 @@ export class RankingService {
       where: { userId, paid: true },
       select: { round: true },
     });
-    const paidRoundNumbers = paidRounds.map((payment) => payment.round);
+    const paidRoundNumbers = new Set(paidRounds.map((payment) => payment.round));
 
     const predictions = await this.prisma.prediction.findMany({
       where: {
         userId,
         match: {
           status: 'FINISHED',
-          round: { in: paidRoundNumbers },
         },
       },
       include: { match: true },
@@ -31,6 +30,9 @@ export class RankingService {
     for (const pred of predictions) {
       if (pred.match.homeGoals == null || pred.match.awayGoals == null)
         continue;
+      if (pred.match.isMoneyPool && !paidRoundNumbers.has(pred.match.round)) {
+        continue;
+      }
 
       const matchHome = pred.match.homeGoals;
       const matchAway = pred.match.awayGoals;

@@ -116,7 +116,7 @@ describe('RankingService', () => {
       expect(prisma.prediction.findMany).toHaveBeenCalledWith({
         where: {
           userId: 'user-1',
-          match: { status: 'FINISHED', round: { in: [1] } },
+          match: { status: 'FINISHED' },
         },
         include: { match: true },
       });

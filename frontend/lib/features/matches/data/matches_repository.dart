@@ -17,6 +17,7 @@ class MatchesRepository {
     required String competition,
     required String stadium,
     required int round,
+    required bool isMoneyPool,
     required DateTime startDate,
     required MatchStatus status,
     int? homeGoals,
@@ -31,6 +32,7 @@ class MatchesRepository {
           'competition': competition,
           'stadium': stadium,
           'round': round,
+          'isMoneyPool': isMoneyPool,
           'startDate': startDate.toUtc().toIso8601String(),
           'status': status.apiValue,
           'homeGoals': ?homeGoals,
@@ -102,6 +104,7 @@ class MatchesRepository {
   Future<MatchModel> update({
     required String id,
     required MatchStatus status,
+    required bool isMoneyPool,
     int? homeGoals,
     int? awayGoals,
   }) async {
@@ -110,6 +113,7 @@ class MatchesRepository {
         '/matches/$id',
         data: {
           'status': status.apiValue,
+          'isMoneyPool': isMoneyPool,
           'homeGoals': homeGoals,
           'awayGoals': awayGoals,
         },

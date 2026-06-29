@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsDateString,
+  IsBoolean,
   IsEnum,
   IsInt,
   IsNotEmpty,
@@ -37,6 +38,11 @@ export class CreateMatchDto {
   @Min(1)
   @IsOptional()
   round?: number;
+
+  @ApiPropertyOptional({ example: true, default: true })
+  @IsBoolean()
+  @IsOptional()
+  isMoneyPool?: boolean;
 
   @ApiProperty({ example: '2026-06-16T16:00:00Z' })
   @IsDateString()

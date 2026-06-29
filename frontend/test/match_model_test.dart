@@ -18,6 +18,7 @@ void main() {
     expect(match.status, MatchStatus.scheduled);
     expect(match.homeTeam, 'Brasil');
     expect(match.awayTeam, 'Argentina');
+    expect(match.isMoneyPool, isTrue);
   });
 
   test('only accepts predictions before the fifteen minute lock', () {
@@ -28,6 +29,7 @@ void main() {
       competition: 'Copa',
       stadium: 'Arena',
       round: 1,
+      isMoneyPool: true,
       startDate: DateTime.now().add(const Duration(hours: 1)),
       status: MatchStatus.scheduled,
     );
@@ -38,6 +40,7 @@ void main() {
       competition: 'Copa',
       stadium: 'Arena',
       round: 1,
+      isMoneyPool: true,
       startDate: DateTime.now().add(const Duration(minutes: 10)),
       status: MatchStatus.scheduled,
     );
