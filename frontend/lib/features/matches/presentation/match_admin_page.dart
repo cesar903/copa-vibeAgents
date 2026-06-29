@@ -299,6 +299,8 @@ class _MatchAdminPageState extends State<MatchAdminPage> {
                   const SizedBox(height: 32),
                   _ResultsReportPanel(repository: widget.repository),
                   const SizedBox(height: 32),
+                  _RankingMaintenancePanel(repository: widget.repository),
+                  const SizedBox(height: 32),
                   _MatchesAdminPanel(repository: widget.repository),
                   const SizedBox(height: 32),
                   _RoundPaymentsPanel(repository: widget.repository),
@@ -396,6 +398,77 @@ class _ResultsReportPanelState extends State<_ResultsReportPanel> {
                   : const Icon(Icons.picture_as_pdf_outlined),
               label: Text(
                 _isGenerating ? 'Gerando relatÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³rio...' : 'Gerar PDF',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RankingMaintenancePanel extends StatefulWidget {
+  const _RankingMaintenancePanel({required this.repository});
+
+  final MatchesRepository repository;
+
+  @override
+  State<_RankingMaintenancePanel> createState() =>
+      _RankingMaintenancePanelState();
+}
+
+class _RankingMaintenancePanelState extends State<_RankingMaintenancePanel> {
+  bool _isRebuilding = false;
+
+  Future<void> _rebuildRanking() async {
+    setState(() => _isRebuilding = true);
+    try {
+      await widget.repository.rebuildRanking();
+      if (!mounted) return;
+      await context.read<RankingCubit>().load();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ranking recalculado com sucesso.')),
+      );
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.message)));
+    } finally {
+      if (mounted) setState(() => _isRebuilding = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Manutencao do ranking',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Recalcula a pontuacao acumulada usando todos os jogos finalizados.',
+            ),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: _isRebuilding ? null : _rebuildRanking,
+              icon: _isRebuilding
+                  ? const SizedBox.square(
+                      dimension: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.refresh_outlined),
+              label: Text(
+                _isRebuilding ? 'Recalculando...' : 'Recalcular ranking',
               ),
             ),
           ],

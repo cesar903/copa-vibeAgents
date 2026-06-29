@@ -87,6 +87,14 @@ class MatchesRepository {
     }
   }
 
+  Future<void> rebuildRanking() async {
+    try {
+      await _client.dio.post<Map<String, dynamic>>('/ranking/rebuild');
+    } on DioException catch (error) {
+      throw ApiException.fromDio(error);
+    }
+  }
+
   Future<List<PredictionModel>> findPredictionsByMatch(String matchId) async {
     try {
       final response = await _client.dio.get<List<dynamic>>(

@@ -34,6 +34,11 @@ class _RankingPageState extends State<RankingPage> {
         title: const Text('Ranking'),
         actions: [
           IconButton(
+            tooltip: 'Regras de pontuacao',
+            onPressed: () => _showRankingRules(context),
+            icon: const Icon(Icons.help_outline),
+          ),
+          IconButton(
             tooltip: 'Atualizar',
             onPressed: () => context.read<RankingCubit>().load(),
             icon: const Icon(Icons.refresh),
@@ -77,6 +82,76 @@ class _RankingPageState extends State<RankingPage> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  void _showRankingRules(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Regras do ranking'),
+          content: const SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _RuleLine(text: 'Placar exato: 10 pontos.'),
+                _RuleLine(text: 'Resultado correto: 5 pontos.'),
+                _RuleLine(text: 'Gols do mandante corretos: 2 pontos.'),
+                _RuleLine(text: 'Gols do visitante corretos: 2 pontos.'),
+                _RuleLine(
+                  text:
+                      'Partidas que valem dinheiro so contam para quem pagou a rodada.',
+                ),
+                _RuleLine(
+                  text:
+                      'Partidas sem grana contam para todos os usuarios com palpite.',
+                ),
+                _RuleLine(
+                  text:
+                      'O ranking e acumulativo e soma todos os jogos finalizados.',
+                ),
+                _RuleLine(
+                  text:
+                      'Desempate: pontos, placares exatos, resultados corretos e ordem de cadastro.',
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Fechar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _RuleLine extends StatelessWidget {
+  const _RuleLine({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.check_circle_outline,
+            size: 18,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          const SizedBox(width: 8),
+          Expanded(child: Text(text)),
+        ],
       ),
     );
   }
