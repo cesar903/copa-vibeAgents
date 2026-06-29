@@ -54,7 +54,7 @@ class _RankingPageState extends State<RankingPage> {
           if (state.status == RankingStatus.failure && state.entries.isEmpty) {
             return AppMessageView(
               icon: Icons.leaderboard_outlined,
-              title: 'Ranking indisponível',
+              title: 'Ranking indisponivel',
               message: state.errorMessage ?? 'Tente novamente.',
               onAction: () => context.read<RankingCubit>().load(),
             );
@@ -63,7 +63,7 @@ class _RankingPageState extends State<RankingPage> {
             return const AppMessageView(
               icon: Icons.emoji_events_outlined,
               title: 'Ranking vazio',
-              message: 'As posições aparecerão após os primeiros resultados.',
+              message: 'As posicoes aparecerao apos os primeiros resultados.',
             );
           }
           return RefreshIndicator(
